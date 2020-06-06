@@ -1,0 +1,8 @@
+.gradle
+.idea
+local.properties
+app/src/main/assets
+
+## Build generated
+build
+app/build
