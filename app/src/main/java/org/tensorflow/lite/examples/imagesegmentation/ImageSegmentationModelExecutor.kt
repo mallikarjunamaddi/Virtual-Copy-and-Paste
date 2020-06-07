@@ -221,11 +221,7 @@ class ImageSegmentationModelExecutor(
         if (mSegmentBits[x][y]==0) {
           resultBitmap.setPixel(x, y, colors[mSegmentBits[x][y]])
         } else {
-          val newPixelColor = ColorUtils.compositeColors(
-            colors[mSegmentBits[x][y]],
-            scaledBackgroundImage.getPixel(x, y)
-          )
-          resultBitmap.setPixel(x, y, newPixelColor)
+          resultBitmap.setPixel(x, y, scaledBackgroundImage.getPixel(x, y))
         }
         maskBitmap.setPixel(x, y, colors[mSegmentBits[x][y]])
       }
