@@ -89,11 +89,11 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
 
     viewFinder = findViewById(R.id.view_finder)
     resultImageView = findViewById(R.id.result_imageview)
-    originalImageView = findViewById(R.id.original_imageview)
-    maskImageView = findViewById(R.id.mask_imageview)
+//    originalImageView = findViewById(R.id.original_imageview)
+//    maskImageView = findViewById(R.id.mask_imageview)
     chipsGroup = findViewById(R.id.chips_group)
     captureButton = findViewById(R.id.capture_button)
-    val useGpuSwitch: Switch = findViewById(R.id.switch_use_gpu)
+//    val useGpuSwitch: Switch = findViewById(R.id.switch_use_gpu)
 
     // Request camera permissions
     if (allPermissionsGranted()) {
@@ -119,13 +119,13 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
 
     imageSegmentationModel = ImageSegmentationModelExecutor(this, useGPU)
 
-    useGpuSwitch.setOnCheckedChangeListener { _, isChecked ->
-      useGPU = isChecked
-      mainScope.async(inferenceThread) {
-        imageSegmentationModel.close()
-        imageSegmentationModel = ImageSegmentationModelExecutor(this@MainActivity, useGPU)
-      }
-    }
+//    useGpuSwitch.setOnCheckedChangeListener { _, isChecked ->
+//      useGPU = isChecked
+//      mainScope.async(inferenceThread) {
+//        imageSegmentationModel.close()
+//        imageSegmentationModel = ImageSegmentationModelExecutor(this@MainActivity, useGPU)
+//      }
+//    }
 
     rerunButton = findViewById(R.id.rerun_button)
     rerunButton.setOnClickListener {
@@ -167,12 +167,12 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
         chip.setPadding(0, paddingDp, 0, paddingDp)
         chipsGroup.addView(chip)
       }
-      val labelsFoundTextView: TextView = findViewById(R.id.tfe_is_labels_found)
-      if (chipsGroup.childCount == 0) {
-        labelsFoundTextView.text = getString(R.string.tfe_is_no_labels_found)
-      } else {
-        labelsFoundTextView.text = getString(R.string.tfe_is_labels_found)
-      }
+//      val labelsFoundTextView: TextView = findViewById(R.id.tfe_is_labels_found)
+//      if (chipsGroup.childCount == 0) {
+//        labelsFoundTextView.text = getString(R.string.tfe_is_no_labels_found)
+//      } else {
+//        labelsFoundTextView.text = getString(R.string.tfe_is_labels_found)
+//      }
     }
     chipsGroup.parent.requestLayout()
   }
@@ -199,8 +199,8 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
     setImageView(resultImageView, modelExecutionResult.bitmapResult)
 //    setImageView(originalImageView, modelExecutionResult.bitmapOriginal)
 //    setImageView(maskImageView, modelExecutionResult.bitmapMaskOnly)
-    val logText: TextView = findViewById(R.id.log_view)
-    logText.text = modelExecutionResult.executionLog
+//    val logText: TextView = findViewById(R.id.log_view)
+//    logText.text = modelExecutionResult.executionLog
 
     setChipsToLogView(modelExecutionResult.itemsFound)
     enableControls(true)
