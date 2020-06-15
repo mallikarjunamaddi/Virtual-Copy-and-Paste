@@ -1,0 +1,10 @@
+#Virtual Environment
+.venv
+
+#Python Cache
+src/__pycache__
+#Editor
+.vscode
+
+#output files
+*.jpg
