@@ -51,7 +51,7 @@ def paste():
         return jsonify({'status:': 'error', 'error': 'empty image'}), 400
 
     # Save debug locally.
-    with open('paste_received.jpg', 'wb') as f:
+    with open('paste_received.png', 'wb') as f:
         f.write(data)
 
     # Convert string data to PIL Image.
@@ -91,7 +91,7 @@ def paste():
         # Paste the current image in photoshop at these coordinates.
         logging.info(' > sending to photoshop...')
         name = datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
-        img_path = os.path.join(os.getcwd(), 'cut_current.png')
+        img_path = os.path.join(os.getcwd(), 'paste_received.png')
         err = ps.paste(img_path, name, x, y, password=args.photoshop_password)
         if err is not None:
             logging.error('error sending to photoshop')
