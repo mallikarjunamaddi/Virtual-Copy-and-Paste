@@ -1,9 +1,9 @@
 # Virtual Copy & Paste local server
 
 ## Setup
+Install python 3.7.7 from https://www.python.org/downloads/release/python-377/
 
 ```console
-Install python 3.7.7 from https://www.python.org/downloads/release/python-377/
 pip install virtualenv
 virtualenv -p python3.7 venv
 .\venv\Scripts\activate
