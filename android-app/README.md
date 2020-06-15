@@ -1,11 +1,3 @@
-# What is Virtual Copy And Paste ?
-
-In this digital world with full of smart gadgets and computers, the ability of a new feature is evaluated based on how it is going to make user's life easier or better, rather than its complexity. One such great invention is Copy & Paste. This looks pretty minute but assume the life without Copy & Paste, which would be horrible.  
-
-Why should we just limit it to a clipboard? Assume, what if we are able to copy the real-world objects from our physical world to digital world within a few clicks. The current idea is to extend the ability or scope of Copy & Paste to its next level.  
-
-Virtual Copy & Paste is a way of copying text/objects from a physical world to digital world. We use a mobile app to capture the text/object from our surroundings and use the same app to paste the content on a digital screen.  
-
 # Image Segmentation Android sample.
 
 The used model, DeepLab
