@@ -17,37 +17,35 @@
 package org.tensorflow.lite.examples.imagesegmentation
 
 import android.Manifest
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.hardware.camera2.CameraCharacteristics
+import android.os.AsyncTask
 import android.os.Bundle
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import android.util.Log
 import android.util.TypedValue
 import android.view.animation.AnimationUtils
 import android.view.animation.BounceInterpolator
-import android.widget.Button
-import android.widget.FrameLayout
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.Switch
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import java.io.File
-import java.util.concurrent.Executors
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.async
 import org.tensorflow.lite.examples.imagesegmentation.camera.CameraFragment
+import java.io.*
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.concurrent.Executors
 
 // This is an arbitrary number we are using to keep tab of the permission
 // request. Where an app has multiple context for requesting permission,
@@ -70,6 +68,7 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
   private lateinit var chipsGroup: ChipGroup
   private lateinit var rerunButton: Button
   private lateinit var captureButton: ImageButton
+  private lateinit var pasteButton: ImageButton
 
   private var lastSavedFile = ""
   private var useGPU = false
@@ -93,6 +92,7 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
 //    maskImageView = findViewById(R.id.mask_imageview)
     chipsGroup = findViewById(R.id.chips_group)
     captureButton = findViewById(R.id.capture_button)
+    pasteButton = findViewById(R.id.paste_button)
     val useGpuSwitch: Switch = findViewById(R.id.switch_use_gpu)
 
     // Request camera permissions
@@ -217,6 +217,12 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
       cameraFragment.takePicture()
     }
 
+    pasteButton.setOnClickListener {
+      val bitmap: Bitmap = (resultImageView.drawable as BitmapDrawable).bitmap
+      val task = PasteTask(this)
+      task.execute(bitmap)
+    }
+
     findViewById<ImageButton>(R.id.toggle_button).setOnClickListener {
       lensFacing = if (lensFacing == CameraCharacteristics.LENS_FACING_BACK) {
         CameraCharacteristics.LENS_FACING_FRONT
@@ -278,5 +284,71 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
     lastSavedFile = file.absolutePath
     enableControls(false)
     viewModel.onApplyModel(file.absolutePath, imageSegmentationModel, inferenceThread)
+  }
+  companion object {
+    class PasteTask internal constructor(context: MainActivity) : AsyncTask<Bitmap, String, String>() {
+
+      override fun doInBackground(vararg params: Bitmap?): String? {
+        val attachmentName = "data"
+        val attachmentFileName = "data.bmp"
+        val crlf = "\r\n"
+        val twoHyphens = "--"
+        val boundary =  "*****"
+        var SERVER_POST_URL = "http://192.168.43.18:8080/paste"
+        val data = ByteArrayOutputStream()
+        params[0]?.compress(Bitmap.CompressFormat.JPEG, 50, data)
+
+        try {
+          val url = URL(SERVER_POST_URL)
+          val connection = url.openConnection() as HttpURLConnection
+          connection.setUseCaches(false)
+          connection.setDoOutput(true)
+          connection.setDoInput(true)
+          connection.setRequestMethod("POST")
+          connection.setRequestProperty("Connection", "Keep-Alive");
+          connection.setRequestProperty("Cache-Control", "no-cache");
+          connection.setRequestProperty(
+                  "Content-Type", "multipart/form-data;boundary=" + boundary);
+          connection.connect()
+
+          val request = DataOutputStream(
+                  connection.getOutputStream()) 
+
+          request.writeBytes(twoHyphens + boundary + crlf)
+          request.writeBytes("Content-Disposition: form-data; name=\"" +
+                  attachmentName.toString() + "\";filename=\"" +
+                  attachmentFileName.toString() + "\"" + crlf)
+          request.writeBytes(crlf)
+
+
+          request.write(data.toByteArray())
+          request.writeBytes(crlf);
+          request.writeBytes(twoHyphens + boundary +
+                  twoHyphens + crlf);
+
+          request.flush();
+          request.close();
+
+          val responseStream: InputStream = BufferedInputStream(connection.getInputStream())
+
+          val responseStreamReader = BufferedReader(InputStreamReader(responseStream))
+
+          var line: String? = ""
+          val stringBuilder = StringBuilder()
+
+          while (responseStreamReader.readLine().also({ line = it }) != null) {
+            stringBuilder.append(line).append("\n")
+          }
+          responseStreamReader.close()
+
+          responseStream.close();
+
+          connection.disconnect();
+        } catch (e: IOException) {
+          Log.e("ImageUploader", "Error uploading image", e)
+        }
+        return "Success!!";
+      }
+    }
   }
 }

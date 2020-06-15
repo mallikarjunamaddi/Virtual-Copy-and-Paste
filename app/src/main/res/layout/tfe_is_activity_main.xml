@@ -91,4 +91,11 @@
         app:layout_anchor="@id/dummy"
         app:layout_anchorGravity="top|end"
         app:srcCompat="@android:drawable/ic_popup_sync" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/paste_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:srcCompat="@android:drawable/ic_menu_send" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
