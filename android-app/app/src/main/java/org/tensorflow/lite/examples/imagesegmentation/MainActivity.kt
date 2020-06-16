@@ -287,6 +287,7 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
   }
   companion object {
     class PasteTask internal constructor(context: MainActivity) : AsyncTask<Bitmap, String, String>() {
+      val _context = context
 
       override fun doInBackground(vararg params: Bitmap?): String? {
         val attachmentName = "data"
@@ -294,7 +295,7 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
         val crlf = "\r\n"
         val twoHyphens = "--"
         val boundary =  "*****"
-        var SERVER_POST_URL = "http://192.168.43.18:8080/paste"
+        var SERVER_POST_URL = this._context.getString(R.string.SERVER_POST_URL)
         val data = ByteArrayOutputStream()
         params[0]?.compress(Bitmap.CompressFormat.PNG, 50, data)
 

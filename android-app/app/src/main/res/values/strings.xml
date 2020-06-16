@@ -4,4 +4,5 @@
     <string name="tfe_is_re_run_model" translatable="false">Re-run model</string>
     <string name="tfe_is_labels_found" translatable="false">Labels Found</string>
     <string name="tfe_is_no_labels_found" translatable="false">No Labels Found</string>
+    <string name="SERVER_POST_URL" translatable="false">http://192.168.43.18:8080/paste</string>
 </resources>
