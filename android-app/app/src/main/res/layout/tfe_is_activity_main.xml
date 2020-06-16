@@ -61,7 +61,7 @@
     <include layout="@layout/tfe_is_bottom_sheet_layout" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/capture_button"
+        android:id="@+id/paste_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
@@ -69,6 +69,26 @@
         android:clickable="true"
         app:backgroundTint="@android:color/white"
         app:layout_anchor="@id/bottom_sheet"
+        app:layout_anchorGravity="top|end"
+        app:srcCompat="@android:drawable/ic_menu_send" />
+
+    <View
+        android:id="@+id/dummy_element"
+        android:layout_width="1dp"
+        android:layout_height="80dp"
+        android:layout_marginEnd="8dp"
+        app:layout_anchor="@id/paste_button"
+        app:layout_anchorGravity="top|right|end" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/capture_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginEnd="8dp"
+        android:clickable="true"
+        app:backgroundTint="@android:color/white"
+        app:layout_anchor="@id/dummy_element"
         app:layout_anchorGravity="top|end"
         app:srcCompat="@android:drawable/ic_menu_camera" />
 
@@ -92,10 +112,4 @@
         app:layout_anchorGravity="top|end"
         app:srcCompat="@android:drawable/ic_popup_sync" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/paste_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        app:srcCompat="@android:drawable/ic_menu_send" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
