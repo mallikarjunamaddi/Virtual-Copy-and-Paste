@@ -77,10 +77,8 @@ def paste():
     screen_arr = np.array(screen.convert('L'))
     # logging.info(f'{view_arr.shape}, {screen_arr.shape}')
     x, y = screenpoint.project(view_arr, screen_arr, False)
-    logging.info(x)
-    logging.info(y)
 
-    found = x != -1 and y != -1
+    found = x == -1 and y == -1
 
     if found:
         # Bring back to screen space
