@@ -10,7 +10,7 @@ function pasteImage(filename, layerName, x, y) {
 
   doc.paste();
   doc.activeLayer.name = layerName;
-  doc.activeLayer.translate(x, y);
+  doc.activeLayer.translate();
   try {
     doc.activeLayer.move(doc.layers[doc.layers.length - 1], ElementPlacement.PLACEBEFORE);
   } catch(e) {
