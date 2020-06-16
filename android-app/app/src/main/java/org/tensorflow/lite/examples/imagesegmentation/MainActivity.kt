@@ -296,7 +296,7 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
         val boundary =  "*****"
         var SERVER_POST_URL = "http://192.168.43.18:8080/paste"
         val data = ByteArrayOutputStream()
-        params[0]?.compress(Bitmap.CompressFormat.PNG, 50, data)
+        params[0]?.compress(Bitmap.CompressFormat.JPEG, 50, data)
 
         try {
           val url = URL(SERVER_POST_URL)
