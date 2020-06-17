@@ -63,8 +63,6 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
   private lateinit var viewModel: MLExecutionViewModel
   private lateinit var viewFinder: FrameLayout
   private lateinit var resultImageView: ImageView
-//  private lateinit var originalImageView: ImageView
-//  private lateinit var maskImageView: ImageView
   private lateinit var chipsGroup: ChipGroup
   private lateinit var rerunButton: Button
   private lateinit var captureButton: ImageButton
@@ -88,8 +86,6 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
 
     viewFinder = findViewById(R.id.view_finder)
     resultImageView = findViewById(R.id.result_imageview)
-//    originalImageView = findViewById(R.id.original_imageview)
-//    maskImageView = findViewById(R.id.mask_imageview)
     chipsGroup = findViewById(R.id.chips_group)
     captureButton = findViewById(R.id.capture_button)
     pasteButton = findViewById(R.id.paste_button)
@@ -197,8 +193,6 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
 
   private fun updateUIWithResults(modelExecutionResult: ModelExecutionResult) {
     setImageView(resultImageView, modelExecutionResult.bitmapResult)
-//    setImageView(originalImageView, modelExecutionResult.bitmapOriginal)
-//    setImageView(maskImageView, modelExecutionResult.bitmapMaskOnly)
     val logText: TextView = findViewById(R.id.log_view)
     logText.text = modelExecutionResult.executionLog
 
@@ -285,6 +279,8 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
     enableControls(false)
     viewModel.onApplyModel(file.absolutePath, imageSegmentationModel, inferenceThread)
   }
+
+  // To make a post call and upload an image to server on background thread.
   companion object {
     class PasteTask internal constructor(context: MainActivity) : AsyncTask<Bitmap, String, String>() {
       val _context = context

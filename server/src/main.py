@@ -33,8 +33,6 @@ def hello():
     logging.info("get call")
     return 'Testing Virtual Copy & Paste.'
 
-
-
 # The paste endpoints handles new paste requests.
 @app.route('/paste', methods=['POST'])
 def paste():
