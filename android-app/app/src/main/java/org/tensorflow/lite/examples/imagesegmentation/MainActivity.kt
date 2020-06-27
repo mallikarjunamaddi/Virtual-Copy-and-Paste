@@ -20,7 +20,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.hardware.camera2.CameraCharacteristics
 import android.os.AsyncTask
 import android.os.Bundle
@@ -76,6 +75,10 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
 
   private var lensFacing = CameraCharacteristics.LENS_FACING_FRONT
 
+  private var isViewImage = false
+  private lateinit var viewImage: Bitmap
+  private lateinit var resultImage: Bitmap
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.tfe_is_activity_main)
@@ -109,6 +112,9 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
       Observer { resultImage ->
         if (resultImage != null) {
           updateUIWithResults(resultImage)
+          this.resultImage = resultImage.bitmapResult
+          val task = PasteTask(this)
+          task.execute(this.resultImage)
         }
       }
     )
@@ -208,14 +214,14 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
   private fun setupControls() {
     captureButton.setOnClickListener {
       it.clearAnimation()
+      isViewImage = false
       cameraFragment.takePicture()
     }
 
     pasteButton.setOnClickListener {
-      val bitmap: Bitmap = (resultImageView.drawable as BitmapDrawable).bitmap
-      val task = PasteTask(this)
-      task.execute(bitmap)
-    }
+        isViewImage = true;
+        cameraFragment.takePicture()
+  }
 
     findViewById<ImageButton>(R.id.toggle_button).setOnClickListener {
       lensFacing = if (lensFacing == CameraCharacteristics.LENS_FACING_BACK) {
@@ -276,8 +282,14 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
     Log.d(TAG, msg)
 
     lastSavedFile = file.absolutePath
-    enableControls(false)
-    viewModel.onApplyModel(file.absolutePath, imageSegmentationModel, inferenceThread)
+    if(!isViewImage) {
+      enableControls(false)
+      viewModel.onApplyModel(file.absolutePath, imageSegmentationModel, inferenceThread)
+    } else {
+      viewImage = ImageUtils.decodeBitmap(File(lastSavedFile))
+      val task = PasteTask(this)
+      task.execute(viewImage)
+    }
   }
 
   // To make a post call and upload an image to server on background thread.
@@ -291,12 +303,19 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
         val crlf = "\r\n"
         val twoHyphens = "--"
         val boundary =  "*****"
-        var SERVER_POST_URL = this._context.getString(R.string.SERVER_POST_URL)
         val data = ByteArrayOutputStream()
-        params[0]?.compress(Bitmap.CompressFormat.PNG, 50, data)
+
+        var SERVER_URL = ""
+        if(this._context.isViewImage) {
+          params[0]?.compress(Bitmap.CompressFormat.JPEG, 50, data)
+          SERVER_URL = this._context.getString(R.string.SERVER_PASTE_URL)
+        } else {
+          params[0]?.compress(Bitmap.CompressFormat.PNG, 50, data)
+          SERVER_URL = this._context.getString(R.string.SERVER_CAPTURE_OBJECT_URL)
+        }
 
         try {
-          val url = URL(SERVER_POST_URL)
+          val url = URL(SERVER_URL)
           val connection = url.openConnection() as HttpURLConnection
           connection.setUseCaches(false)
           connection.setDoOutput(true)
