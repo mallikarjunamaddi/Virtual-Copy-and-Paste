@@ -33,6 +33,43 @@ def hello():
     logging.info("get call")
     return 'Testing Virtual Copy & Paste.'
 
+#Capture the Segmented Object, scale it and Save locally.
+@app.route('/captureObject', methods=['POST'])
+def captureObject():
+    start = time.time()
+    logging.info(' Capturing Object')
+
+    if 'data' not in request.files:
+        return jsonify({
+            'status': 'error',
+            'error': 'missing file param `data`'
+        }), 400
+    data = request.files['data'].read()
+    if len(data) == 0:
+        return jsonify({'status:': 'error', 'error': 'empty image'}), 400
+
+    # Save captured_object locally.
+    with open('captured_object.png', 'wb') as f:
+        f.write(data)
+
+    logging.info(' > opening captured_object...')
+    captured_object = Image.open('captured_object.png')
+    
+    # Scale the captured_object.
+    logging.info(' > scaling captured_object...')
+    scaled_object = captured_object.resize((captured_object.size[0] * 3, captured_object.size[1] * 3))
+
+    # Save scaled_object locally.
+    logging.info(' > saving scaled_object...')
+    scaled_object.save('scaled_object.png')
+
+    # Print stats
+    logging.info(f'Completed in {time.time() - start:.2f}s')
+
+    # Return Status
+    return jsonify({'status': 'ok'})
+
+
 # The paste endpoints handles new paste requests.
 @app.route('/paste', methods=['POST'])
 def paste():
@@ -49,7 +86,7 @@ def paste():
         return jsonify({'status:': 'error', 'error': 'empty image'}), 400
 
     # Save debug locally.
-    with open('paste_received.png', 'wb') as f:
+    with open('view_image.jpg', 'wb') as f:
         f.write(data)
 
     # Convert string data to PIL Image.
@@ -75,8 +112,11 @@ def paste():
     screen_arr = np.array(screen.convert('L'))
     # logging.info(f'{view_arr.shape}, {screen_arr.shape}')
     x, y = screenpoint.project(view_arr, screen_arr, False)
+    logging.info(' > cordinates...')
+    logging.info(x)
+    logging.info(y)
 
-    found = x == -1 and y == -1
+    found = x != -1 and y != -1
 
     if found:
         # Bring back to screen space
@@ -87,7 +127,7 @@ def paste():
         # Paste the current image in photoshop at these coordinates.
         logging.info(' > sending to photoshop...')
         name = datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
-        img_path = os.path.join(os.getcwd(), 'paste_received.png')
+        img_path = os.path.join(os.getcwd(), 'scaled_object.png')
         err = ps.paste(img_path, name, x, y, password=args.photoshop_password)
         if err is not None:
             logging.error('error sending to photoshop')
